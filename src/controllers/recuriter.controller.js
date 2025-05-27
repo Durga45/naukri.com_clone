@@ -53,7 +53,7 @@ export const getRecruiterProfile = async (req, res) => {
     });
 
     if (!profile) {
-      // Return empty fields if profile doesn't exist
+      
       profile = { companyName: "", designation: "", userId };
     }
 
@@ -145,12 +145,12 @@ export const deleteJob = async (req, res) => {
       return res.status(404).json({ message: "Job not found or unauthorized" });
     }
 
-    // Step 1: Delete all applications related to this job
+   
     await prisma.application.deleteMany({
       where: { jobPostId: jobId }
     });
 
-    // Step 2: Delete the job post itself
+    
     await prisma.jobPost.delete({
       where: { id: jobId }
     });
