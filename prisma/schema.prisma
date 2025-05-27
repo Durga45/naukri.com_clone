@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id         String             @id @default(uuid())
+  firstName  String
+  lastName   String
+  username   String             @unique
+  email      String             @unique
+  password   String
+  role       Role               @default(CANDIDATE)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  candidateProfile CandidateProfile?
+  recruiterProfile RecruiterProfile?
+}
+
+enum Role {
+  RECRUITER
+  CANDIDATE
+}
+
+model CandidateProfile {
+  id         String       @id @default(uuid())
+  userId     String       @unique
+  bio        String?
+  skills     String[]
+  resumeUrl  String?
+  experience Int?
+
+  user       User         @relation(fields: [userId], references: [id])
+  appliedJobs Application[]
+}
+
+model RecruiterProfile {
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  companyName String?
+  designation String?
+
+  user        User      @relation(fields: [userId], references: [id])
+  jobPosts    JobPost[]
+}
+
+model JobPost {
+  id            String        @id @default(uuid())
+  title         String
+  description   String
+  location      String
+  salary        Int
+  createdAt     DateTime      @default(now())
+  recruiterId   String
+
+  recruiter     RecruiterProfile @relation(fields: [recruiterId], references: [id])
+  applications  Application[]
+}
+
+model Application {
+  id            String        @id @default(uuid())
+  candidateId   String
+  jobPostId     String
+  appliedAt     DateTime      @default(now())
+
+  candidate     CandidateProfile @relation(fields: [candidateId], references: [id])
+  jobPost       JobPost          @relation(fields: [jobPostId], references: [id])
+}
