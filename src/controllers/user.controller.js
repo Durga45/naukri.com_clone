@@ -129,7 +129,7 @@ export const getCandidateProfile = async (req, res) => {
       where: { userId },
     });
 
-    // If profile not found, return an empty structure instead of 404
+  
     if (!profile) {
       return res.status(200).json({
         bio: "",
@@ -155,7 +155,7 @@ export const upsertCandidateProfile = async (req, res) => {
       return res.status(403).json({ message: "Forbidden access: Only CANDIDATE can update profile" });
     }
 
-    // Validate request body using Zod
+   
     const parsed = candidateProfileSchema.parse(req.body);
     const { bio, skills, resumeUrl, experience } = parsed;
 
@@ -221,7 +221,7 @@ export const applyToJob = async (req, res) => {
       return res.status(403).json({ message: "Only CANDIDATES can apply" });
     }
 
-    // Candidate profile get karo userId se
+  
     const candidate = await prisma.candidateProfile.findUnique({
       where: { userId },
     });
@@ -230,10 +230,10 @@ export const applyToJob = async (req, res) => {
       return res.status(400).json({ message: "Candidate profile not found" });
     }
 
-    // route param me se jobPostId le lo (name exact match hona chahiye)
+    
     const jobPostId = req.params.jobPostId;
 
-    // Check karo kya already apply kar chuka hai
+   
     const alreadyApplied = await prisma.application.findFirst({
       where: {
         jobPostId,
@@ -245,7 +245,7 @@ export const applyToJob = async (req, res) => {
       return res.status(400).json({ message: "Already applied to this job" });
     }
 
-    // Apply karne ka code
+   
     const application = await prisma.application.create({
       data: {
         jobPostId,
@@ -285,11 +285,11 @@ export const getAppliedJobs = async (req, res) => {
         candidateId: candidate.id,
       },
       include: {
-        jobPost: true,  // yaha 'jobPost' relation include kar rahe hain
+        jobPost: true,  
       },
     });
 
-    // Applications se jobPost nikal ke bhejo
+    
     const appliedJobs = applications.map(app => app.jobPost);
 
     return res.status(200).json(appliedJobs);
